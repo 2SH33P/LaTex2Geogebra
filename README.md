@@ -30,7 +30,7 @@ LaTeX ➔ GeoGebra 公式转换器
 
 # 快速开始
 
-下载文件：获取 latex_to_geogebra.html。
+下载文件：获取 index.html。
 
 直接运行：使用任何现代浏览器（Chrome, Edge, Firefox, Safari）打开该文件。
 
