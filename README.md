@@ -48,14 +48,6 @@ LaTeX ➔ GeoGebra 公式转换器
 
 逻辑控制: 原生 JavaScript (正则表达式转换引擎)
 
-字体: Noto Sans SC, Fira Code
-
-# 转换范例
-
-LaTeX 输入
-
-GeoGebra 输出 (自动补全后)
-
 # 特性
 
 - 自动补全乘号
