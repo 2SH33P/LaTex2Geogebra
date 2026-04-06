@@ -27,6 +27,13 @@
         .btn-tool {
             @apply px-3 py-1 bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-600 rounded text-sm transition-colors border border-gray-200;
         }
+        /* 在这里调大 KaTeX 预览文字的大小 */
+        #latexPreview {
+            font-size: 2.25rem; /* 约 36px，您可以根据需要调整此数值 */
+        }
+        #latexPreview .katex-display {
+            margin: 0;
+        }
     </style>
 </head>
 <body class="min-h-screen py-10 px-4">
@@ -34,7 +41,7 @@
         <!-- 标题区 -->
         <div class="text-center mb-10">
             <h1 class="text-4xl font-bold text-slate-800 mb-3">LaTeX ➔ GeoGebra</h1>
-            <p class="text-slate-500">智能转换公式，自动补全乘号 <code class="bg-gray-200 px-1 rounded text-pink-600">*</code></p>
+            <p class="text-slate-500">智能转换公式 <code class="bg-gray-200 px-1 rounded text-pink-600">*</code></p>
         </div>
 
         <div class="grid grid-cols-1 gap-8">
@@ -42,6 +49,12 @@
             <div class="glass p-8 rounded-3xl shadow-xl">
                 <div class="flex justify-between items-center mb-4">
                     <label class="block text-sm font-bold text-slate-700">LaTeX 源码输入</label>
+                    <div class="flex gap-2">
+                        <button onclick="insertText('\\frac{ }{ }')" class="btn-tool">分式</button>
+                        <button onclick="insertText('\\sqrt{ }')" class="btn-tool">根号</button>
+                        <button onclick="insertText('P_mt_2')" class="btn-tool">测试用例</button>
+                        <button onclick="clearInput()" class="btn-tool bg-red-50 text-red-500 border-red-100 hover:bg-red-100">清空</button>
+                    </div>
                 </div>
                 <textarea 
                     id="latexInput" 
@@ -51,8 +64,8 @@
                 
                 <!-- 实时渲染 -->
                 <div class="mt-6">
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">数学预览</span>
-                    <div class="mt-2 p-6 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-center min-h-[80px] overflow-auto">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">数学预览 (已调大字号)</span>
+                    <div class="mt-2 p-6 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-center min-h-[120px] overflow-auto">
                         <div id="latexPreview"></div>
                     </div>
                 </div>
@@ -132,22 +145,15 @@
             });
 
             // 5. 处理上标和下标的基本清理 (去除 {})
-            // 先处理简单的 P_m -> P_m
             res = res.replace(/_\{([^}]*)\}/g, '_$1');
             res = res.replace(/\^\{([^}]*)\}/g, '^($1)');
 
             // 6. 核心逻辑：插入隐式乘号 *
-            // a. 在下标变量和下一个字母之间加 * (例如 P_mt -> P_m * t)
             res = res.replace(/([a-zA-Z]_[a-zA-Z0-9]+)([a-zA-Z])/g, '$1 * $2');
-            
-            // b. 在字母和下标变量之间加 * (例如 tP_m -> t * P_m)
             res = res.replace(/([a-zA-Z])([a-zA-Z]_[a-zA-Z0-9]+)/g, '$1 * $2');
 
-            // c. 在两个字母之间加 * (例如 mgH -> m*g*H)，但要避开已经插入的标识符
-            // 重复执行以处理连续字母
             for(let i=0; i<5; i++) {
                 res = res.replace(/([a-zA-Z0-9])([a-zA-Z])(?![a-zA-Z0-9_]*__FUNC)/g, (match, p1, p2) => {
-                    // 如果 p2 是某个保护函数标识符的一部分，不加 *
                     if (res.slice(res.indexOf(match)).startsWith('__FUNC')) return match;
                     return p1 + ' * ' + p2;
                 });
@@ -164,7 +170,6 @@
             res = res.replace(/\\/g, ''); 
             res = res.replace(/\{/g, '(').replace(/\}/g, ')');
             
-            // 规范化空格
             res = res.replace(/\s+\*\s+/g, '*');
             res = res.replace(/\*/g, ' * '); 
 
